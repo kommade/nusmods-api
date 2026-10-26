@@ -417,20 +417,82 @@ def test_get_shared_timetable_rejects_invalid_share_urls(tmp_path, url, message)
         client.get_shared_timetable(url)
 
 
-def test_get_shared_timetable_rejects_unknown_lesson_selection(tmp_path):
+def test_get_shared_timetable_warns_for_unknown_lesson_selection(tmp_path):
     client = make_client(tmp_path)
     client.get_module = Mock(
         return_value=make_module(
             "CS1231S",
-            [make_lesson("1", "Lecture", "Monday", "0800", "1000", "LT1")],
+            [
+                make_lesson("1", "Lecture", "Monday", "0800", "1000", "LT1"),
+                make_lesson("25B", "Tutorial", "Tuesday", "1000", "1200", "LT2"),
+            ],
             None,
         )
     )
 
-    with pytest.raises(ValueError, match="Could not find selected lessons"):
-        client.get_shared_timetable(
-            "https://nusmods.com/timetable/sem-1/share?CS1231S=TUT:25B"
+    with pytest.warns(UserWarning, match="Could not find selected lessons"):
+        timetable = client.get_shared_timetable(
+            "https://nusmods.com/timetable/sem-1/share?"
+            "CS1231S=LEC:1,TUT:25B,TUT:MISSING"
         )
+
+    assert [
+        (lesson.lessonType, lesson.classNo)
+        for lesson in timetable.weekly
+    ] == [
+        ("Lecture", "1"),
+        ("Tutorial", "25B"),
+    ]
+
+
+def test_get_shared_timetable_warns_and_skips_missing_module(tmp_path):
+    client = make_client(tmp_path)
+    modules = shared_timetable_modules()
+
+    def get_module(module_code):
+        if module_code == "MISSING":
+            raise NUSModsNotFoundError("missing module")
+        return modules["MA1522"]
+
+    client.get_module = Mock(side_effect=get_module)
+
+    with pytest.warns(UserWarning, match="Could not find module MISSING"):
+        timetable = client.get_shared_timetable(
+            "https://nusmods.com/timetable/sem-1/share?"
+            "MISSING=LEC:1&MA1522=LEC:1"
+        )
+
+    assert [lesson.moduleCode for lesson in timetable.weekly] == ["MA1522"]
+    assert [exam.moduleCode for exam in timetable.exams] == ["MA1522"]
+
+
+def test_get_shared_timetable_warns_and_skips_module_without_semester_data(
+    tmp_path,
+):
+    client = make_client(tmp_path)
+    modules = shared_timetable_modules()
+    client.get_module = Mock(
+        side_effect=lambda module_code: (
+            Module(
+                moduleCode=module_code,
+                title=f"{module_code} title",
+                semesters=[2],
+                acadYear="2025-2026",
+                semesterData=[],
+            )
+            if module_code == "NOSEM"
+            else modules["MA1522"]
+        )
+    )
+
+    with pytest.warns(UserWarning, match="NOSEM has no data for semester 1"):
+        timetable = client.get_shared_timetable(
+            "https://nusmods.com/timetable/sem-1/share?"
+            "NOSEM=LEC:1&MA1522=LEC:1"
+        )
+
+    assert [lesson.moduleCode for lesson in timetable.weekly] == ["MA1522"]
+    assert [exam.moduleCode for exam in timetable.exams] == ["MA1522"]
 
 
 def test_get_shared_timetable_rejects_malformed_lesson_selection(tmp_path):
@@ -446,22 +508,4 @@ def test_get_shared_timetable_rejects_malformed_lesson_selection(tmp_path):
     with pytest.raises(ValueError, match="Invalid lesson selection"):
         client.get_shared_timetable(
             "https://nusmods.com/timetable/sem-1/share?CS1231S=LEC"
-        )
-
-
-def test_get_shared_timetable_requires_module_data_for_requested_semester(tmp_path):
-    client = make_client(tmp_path)
-    client.get_module = Mock(
-        return_value=Module(
-            moduleCode="CS1231S",
-            title="CS1231S title",
-            semesters=[2],
-            acadYear="2025-2026",
-            semesterData=[],
-        )
-    )
-
-    with pytest.raises(ValueError, match="has no data for semester 1"):
-        client.get_shared_timetable(
-            "https://nusmods.com/timetable/sem-1/share?CS1231S=LEC:1"
         )

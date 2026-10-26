@@ -3,6 +3,7 @@
 from __future__ import annotations
 
 import re
+import warnings
 from typing import Any
 
 import requests
@@ -267,7 +268,15 @@ class NUSModsClient:
         exams: list[ExamTimetable] = []
 
         for module_code, selection_groups in query.items():
-            module = self.get_module(module_code)
+            try:
+                module = self.get_module(module_code)
+            except NUSModsNotFoundError:
+                warnings.warn(
+                    f"Could not find module {module_code}; skipping it",
+                    UserWarning,
+                    stacklevel=2,
+                )
+                continue
 
             semester_data = next(
                 (
@@ -279,9 +288,13 @@ class NUSModsClient:
             )
 
             if semester_data is None:
-                raise ValueError(
-                    f"{module_code} has no data for semester {semester}"
+                warnings.warn(
+                    f"{module_code} has no data for semester {semester}; "
+                    "skipping it",
+                    UserWarning,
+                    stacklevel=2,
                 )
+                continue
 
             selected_lessons = self._select_lessons(
                 module_code=module_code,
@@ -358,9 +371,11 @@ class NUSModsClient:
         missing = requested - found
 
         if missing:
-            raise ValueError(
+            warnings.warn(
                 f"Could not find selected lessons for {module_code}: "
-                f"{sorted(missing)}"
+                f"{sorted(missing)}; returning the lessons that were found",
+                UserWarning,
+                stacklevel=2,
             )
 
         return selected
