@@ -9,12 +9,15 @@ from .exceptions import (
 from .models import (
     WeekRange,
     Lesson,
+    LessonWithModule,
     Workload,
     PrerequisiteTree,
     ModuleCondensed,
     Module,
     VenueLesson,
     VenueInformation,
+    Timetable,
+    ExamTimetable
 )
 
 __all__ = [
@@ -26,10 +29,13 @@ __all__ = [
     "NUSModsNotFoundError",
     "WeekRange",
     "Lesson",
+    "LessonWithModule",
     "Workload",
     "PrerequisiteTree",
     "ModuleCondensed",
     "Module",
     "VenueLesson",
     "VenueInformation",
+    "Timetable",
+    "ExamTimetable",
 ]

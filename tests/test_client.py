@@ -309,7 +309,7 @@ def test_get_venue_information_groups_lessons_by_venue(tmp_path):
 
     assert len(result["COM1-01-01"]) == 1
     assert result["COM1-01-01"][0].day == "Monday"
-    assert result["COM1-01-01"][0].classes[0].moduleCode == "CS1010"
+    assert result["COM1-01-01"][0].classes[0]["moduleCode"] == "CS1010"
     client._get.assert_called_once_with("semesters/1/venues.json")
 
 
