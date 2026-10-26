@@ -17,7 +17,7 @@ SHARED_TIMETABLE_URL = (
 
 @pytest.mark.live
 def test_get_shared_timetable_against_live_nusmods_api():
-    client = NUSModsClient(cache_directory=None, timeout=20)
+    client = NUSModsClient(timeout=20)
 
     timetable = client.get_shared_timetable(SHARED_TIMETABLE_URL)
 
