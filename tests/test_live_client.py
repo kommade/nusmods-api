@@ -1,4 +1,4 @@
-from datetime import date
+from datetime import datetime, timezone
 
 import pytest
 
@@ -57,9 +57,9 @@ def test_get_shared_timetable_against_live_nusmods_api():
         (exam.moduleCode, exam.examDate)
         for exam in timetable.exams
     ] == [
-        ("MA1522", date(2026, 11, 24)),
-        ("CS1231S", date(2026, 11, 26)),
-        ("IS1108", date(2026, 11, 28)),
-        ("CS2030S", date(2026, 11, 30)),
-        ("GES1034", date(2026, 12, 1)),
+        ("MA1522", datetime(2026, 11, 24, 9, tzinfo=timezone.utc)),
+        ("CS1231S", datetime(2026, 11, 26, 1, tzinfo=timezone.utc)),
+        ("IS1108", datetime(2026, 11, 28, 5, tzinfo=timezone.utc)),
+        ("CS2030S", datetime(2026, 11, 30, 9, tzinfo=timezone.utc)),
+        ("GES1034", datetime(2026, 12, 1, 5, tzinfo=timezone.utc)),
     ]

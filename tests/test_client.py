@@ -2,7 +2,7 @@ from unittest.mock import Mock
 
 import pytest
 import requests
-from datetime import date
+from datetime import datetime
 
 from nusmods_api import (
     NUSModsClient,
@@ -89,7 +89,7 @@ def shared_timetable_modules():
                 make_lesson("1", "Lecture", "Thursday", "1200", "1400", "UT-AUD1"),
                 make_lesson("1", "Lecture", "Friday", "1200", "1300", "UT-AUD1"),
             ],
-            date(2026, 11, 26),
+            datetime(2026, 11, 26),
         ),
         "CS2030S": make_module(
             "CS2030S",
@@ -98,7 +98,7 @@ def shared_timetable_modules():
                 make_lesson("10B", "Laboratory", "Thursday", "1000", "1200", "COM1-0203"),
                 make_lesson("1", "Lecture", "Monday", "1200", "1400", "LT19"),
             ],
-            date(2026, 11, 30),
+            datetime(2026, 11, 30),
         ),
         "GES1034": make_module(
             "GES1034",
@@ -106,7 +106,7 @@ def shared_timetable_modules():
                 make_lesson("1", "Lecture", "Monday", "1000", "1200", "LT1"),
                 make_lesson("E2", "Tutorial", "Tuesday", "1200", "1400", "COM1-0203"),
             ],
-            date(2026, 12, 1),
+            datetime(2026, 12, 1),
         ),
         "IS1108": make_module(
             "IS1108",
@@ -114,14 +114,14 @@ def shared_timetable_modules():
                 make_lesson("14", "Tutorial", "Thursday", "0800", "1000", "COM1-0203"),
                 make_lesson("2", "Lecture", "Thursday", "1200", "1400", "LT2"),
             ],
-            date(2026, 11, 28),
+            datetime(2026, 11, 28),
         ),
         "MA1522": make_module(
             "MA1522",
             [
                 make_lesson("1", "Lecture", "Friday", "0800", "1000", "LT3"),
             ],
-            date(2026, 11, 24),
+            datetime(2026, 11, 24),
         ),
     }
 
@@ -368,11 +368,11 @@ def test_get_shared_timetable_matches_shared_url_schedule(tmp_path):
         (exam.moduleCode, exam.examDate)
         for exam in timetable.exams
     ] == [
-        ("MA1522", date(2026, 11, 24)),
-        ("CS1231S", date(2026, 11, 26)),
-        ("IS1108", date(2026, 11, 28)),
-        ("CS2030S", date(2026, 11, 30)),
-        ("GES1034", date(2026, 12, 1)),
+        ("MA1522", datetime(2026, 11, 24)),
+        ("CS1231S", datetime(2026, 11, 26)),
+        ("IS1108", datetime(2026, 11, 28)),
+        ("CS2030S", datetime(2026, 11, 30)),
+        ("GES1034", datetime(2026, 12, 1)),
     ]
     assert [call.args[0] for call in client.get_module.call_args_list] == [
         "CS1231S",

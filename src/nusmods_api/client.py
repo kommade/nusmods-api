@@ -6,7 +6,7 @@ import re
 from typing import Any
 
 import requests
-from datetime import datetime, date
+from datetime import datetime
 from pathlib import Path
 from urllib.parse import parse_qs, urlparse
 
@@ -387,8 +387,8 @@ class NUSModsClient:
     def _exam_sort_key(
         self,
         exam: ExamTimetable,
-    ) -> tuple[date, str]:
+    ) -> tuple[datetime, str]:
         return (
-            exam.examDate or date.max,
+            exam.examDate or datetime.max,
             exam.moduleCode,
         )

@@ -172,6 +172,8 @@ The package exposes frozen dataclasses for common API response types:
 
 Some model fields retain the NUSMods API naming convention, such as
 `moduleCode`, `classNo`, `startTime`, `lessonType`, and `examDate`.
+`ExamTimetable.examDate` is represented as a `datetime` and preserves the
+time and timezone supplied by the API.
 
 ## Error handling
 

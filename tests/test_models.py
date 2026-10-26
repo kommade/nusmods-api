@@ -1,4 +1,4 @@
-from datetime import date
+from datetime import date, datetime, timezone
 
 import pytest
 
@@ -11,6 +11,7 @@ from nusmods_api.models import (
     WeekRange,
     Workload,
     parse_date,
+    parse_datetime,
     parse_weeks,
 )
 
@@ -22,6 +23,17 @@ def test_parse_date_returns_date():
 def test_parse_date_rejects_invalid_date():
     with pytest.raises(ValueError):
         parse_date("not-a-date")
+
+
+def test_parse_datetime_preserves_time_and_timezone():
+    assert parse_datetime("2025-12-01T09:30:00Z") == datetime(
+        2025,
+        12,
+        1,
+        9,
+        30,
+        tzinfo=timezone.utc,
+    )
 
 
 def test_parse_weeks_preserves_week_numbers():
@@ -105,9 +117,16 @@ def test_workload_from_list_requires_five_items():
 
 
 def test_semester_data_converts_exam_date():
-    semester = SemesterData(semester=1, examDate="2025-12-01")
+    semester = SemesterData(semester=1, examDate="2025-12-01T09:30:00Z")
 
-    assert semester.examDate == date(2025, 12, 1)
+    assert semester.examDate == datetime(
+        2025,
+        12,
+        1,
+        9,
+        30,
+        tzinfo=timezone.utc,
+    )
 
 
 def test_models_are_frozen():

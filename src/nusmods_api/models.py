@@ -88,13 +88,13 @@ class SemesterData:
     """Semester data for a module."""
 
     semester: int
-    examDate: date | None = None
+    examDate: datetime | None = None
     examDuration: int | None = None
     timetable: list[Lesson] | None = None
     
     def __post_init__(self) -> None:
-        if self.examDate is not None and not isinstance(self.examDate, date):
-            object.__setattr__(self, "examDate", parse_date(self.examDate))
+        if self.examDate is not None and not isinstance(self.examDate, datetime):
+            object.__setattr__(self, "examDate", parse_datetime(self.examDate))
 
 @dataclass(frozen=True)
 class ModuleCondensed:
@@ -138,7 +138,7 @@ class ExamTimetable:
     """Exam timetable for a module."""
 
     moduleCode: str
-    examDate: date | None = None
+    examDate: datetime | None = None
     examDuration: int | None = None
 
 @dataclass(frozen=True)
@@ -166,6 +166,10 @@ def parse_date(value: str) -> date:
         return date.fromisoformat(value)
     except ValueError:
         return datetime.fromisoformat(value.replace("Z", "+00:00")).date()
+
+
+def parse_datetime(value: str) -> datetime:
+    return datetime.fromisoformat(value.replace("Z", "+00:00"))
 
 
 def parse_weeks(value: list[int] | dict[str, Any]) -> LessonWeeks:
