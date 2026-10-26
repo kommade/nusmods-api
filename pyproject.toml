@@ -1,0 +1,16 @@
+[project]
+name = "nusmods-api"
+version = "0.1.0"
+description = "A Python wrapper for the NUSMods API"
+readme = "README.md"
+authors = [
+    { name = "kommade", email = "khoojarrell@gmail.com" }
+]
+requires-python = ">=3.15.0"
+dependencies = [
+    "requests>=2.34.2",
+]
+
+[build-system]
+requires = ["uv_build>=0.13.5,<0.14.0"]
+build-backend = "uv_build"
