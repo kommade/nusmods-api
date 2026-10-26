@@ -148,7 +148,7 @@ class Timetable:
     weekly: list[LessonWithModule]
     exams: list[ExamTimetable]
     
-    def get_day_schedule(self, day: str) -> list[Lesson]:
+    def get_day_schedule(self, day: str) -> list[LessonWithModule]:
         """Get the lessons for a specific day of the week."""
         if day not in {"Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday", "Sunday"}:
             raise ValueError("Day must be one of Monday, Tuesday, Wednesday, Thursday, Friday, Saturday, Sunday")
